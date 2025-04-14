@@ -7,6 +7,7 @@ class RNN_Classifier(nn.Module):
 
     def __init__(self,rnn_type='LSTM'):
         super().__init__()
+        self.rnn_type = rnn_type # RNN类型
         self.init_rnn(rnn_type)
         self.fc = nn.Linear(128, 40)  # 输出层 
 
@@ -60,6 +61,8 @@ class RNN_Classifier(nn.Module):
     def forward(self, x):
         # 输入x的shape为[batch, times, features]
         outputs, l_h = self.rnn(x)  # 连续运算后所有输出值
+        if self.rnn_type == 'BiRNN' or self.rnn_type == 'BiLSTM':
+            outputs = outputs[..., :128] + outputs[..., 128:]  # 双向RNN的输出需要拼接
         # 取最后一个时间点的输出值
         out = self.fc(outputs[:,-1,:])
         return out
@@ -101,11 +104,11 @@ if __name__ == '__main__':
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
         return model, criterion, optimizer
     
-    rnn_types = ['LSTM', 'GRU', 'RNN', 'BiRNN', 'BiLSTM']
+    rnn_types = ['BiRNN', 'BiLSTM','LSTM', 'GRU', 'RNN']
 
     for rnn_type in rnn_types:
         # 模型
-        model, criterion, optimizer = build_rnn_model()
+        model, criterion, optimizer = build_rnn_model(rnn_type)
 
         num_epochs = 200
         for epoch in range(num_epochs):
