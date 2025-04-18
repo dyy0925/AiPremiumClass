@@ -134,7 +134,7 @@ def test(model, test_loader, device='cuda'):
 
 
 if __name__ == '__main__':
-    writer = SummaryWriter()
+    writer = SummaryWriter("runs")
 
     list1 = []
 
