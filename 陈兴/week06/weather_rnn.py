@@ -64,11 +64,13 @@ train_loader = DataLoader(TensorDataset(X_train, y_train), batch_size=64, shuffl
 # 模型定义
 class WeatherRNN(nn.Module):
     def __init__(self, input_size=1, hidden_size=64, num_layers=2, output_size=5):
-        super(WeatherRNN, self).__init__()
+        super().__init__()
         self.rnn = nn.RNN(input_size, hidden_size, num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
+        # x: [batch_size, seq_length, input_size]
+        # [num_layers, batch_size, hidden_size]
         h0 = torch.zeros(2, x.size(0), 64).to(x.device)  # num_layers=2
         out, _ = self.rnn(x, h0)
         return self.fc(out[:, -1, :])

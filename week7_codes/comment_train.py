@@ -43,7 +43,6 @@ def train(model, train_dl, criterion, optimizer):
         writer.add_scalar('train_loss', loss.item(), train_loss_cnt)
         train_loss_cnt += 1
 
-
 def train_step(model, tokens, labels, criterion):
     logits = model(tokens)
     loss = criterion(logits, labels)
