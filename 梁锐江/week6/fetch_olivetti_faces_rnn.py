@@ -20,6 +20,7 @@ class RNNClassifier(torch.nn.Module):
         output, h_t = self.rnn(x)
         return self.fc(output[:, -1, :])
 
+
 class RNNClassifierWithOutLinear(torch.nn.Module):
     def __init__(self):
         super().__init__()
@@ -70,6 +71,25 @@ class LSTMClassifier(torch.nn.Module):
         return self.fc(output[:, -1, :])
 
 
+class BiRNNClassifier(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.lstm = torch.nn.LSTM(
+            input_size=64,
+            hidden_size=128,
+            bias=True,
+            num_layers=5,
+            bidirectional=True,
+            batch_first=True
+        )
+        self.fc = torch.nn.Linear(128, 40)
+
+    def forward(self, x):
+        output, (h_0, c_0) = self.lstm(x)
+        output = output[..., :128] + output[..., 128:]
+        return self.fc(output[:, -1, :])
+
+
 def get_faces_data():
     faces = fetch_olivetti_faces(data_home="./data/fetch_olivetti_faces", shuffle=True)
 
@@ -108,10 +128,12 @@ def train_model(model, dirName):
 
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = RNNClassifier()
+    # model = RNNClassifier()
     # model = RNNClassifierWithOutLinear()
     # model = GRUClassifier()
     # model = LSTMClassifier()
+    model = BiRNNClassifier()
+
     model.to(device)
-    dirName = "./runs/lstm"
+    dirName = "./runs/biRnn"
     train_model(model, dirName)

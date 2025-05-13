@@ -4,11 +4,13 @@ import numpy as np
 
 from torch.utils.tensorboard import SummaryWriter
 
+
 def train_fasttext_model(unsupervised_text_file_path, supervised_text_file_path):
     # model = fasttext.train_unsupervised(input=unsupervised_text_file_path, model='skipgram', dim=100)
     # model = fasttext.train_unsupervised(input=unsupervised_text_file_path, model='cbow', dim=100)
     model = fasttext.train_supervised(input=supervised_text_file_path, dim=100)
     return model
+
 
 def save_embeddings_to_tensorboard(model, selected_words, log_dir):
     words = model.get_words()
@@ -33,6 +35,7 @@ def save_embeddings_to_tensorboard(model, selected_words, log_dir):
     print(f"写入 {len(selected_vectors)} 个词向量到 TensorBoard")
     
     writer.close()
+
 
 def get_random_similarities_and_plot(model, log_dir):
     vocab = model.get_words()
@@ -66,9 +69,15 @@ def get_random_similarities_and_plot(model, log_dir):
     
     save_embeddings_to_tensorboard(model, selected_words, log_dir)
 
-unsupervised_text_file_path = r"C:\Users\97647\Desktop\corpus.txt"
-supervised_text_file_path = r"C:\Users\97647\Desktop\cooking.stackexchange.txt" # 移动到英文路径
 
-model = train_fasttext_model(unsupervised_text_file_path, supervised_text_file_path)
+def main():
+    unsupervised_text_file_path = r"C:\Users\97647\Desktop\corpus.txt"
+    supervised_text_file_path = r"C:\Users\97647\Desktop\cooking.stackexchange.txt" # 移动到英文路径
 
-get_random_similarities_and_plot(model, log_dir='./邪王真眼/week05/run')
+    model = train_fasttext_model(unsupervised_text_file_path, supervised_text_file_path)
+
+    get_random_similarities_and_plot(model, log_dir='./邪王真眼/week05/run')
+
+
+if __name__ == "__main__":
+    main()
