@@ -71,4 +71,4 @@ if __name__ == '__main__':
             writer.add_scalar('Loss/train', loss.item(), train_loss_cnt)
             train_loss_cnt += 1
 
-    torch.save(model.state_dict(), 'seq2seq_state.bin')
+    torch.save(model.state_dict(), 'seq2seqconcat_state.bin')

@@ -3,7 +3,7 @@ import torch.nn as nn
 
 # 编码器
 class Encoder(nn.Module):
-    def __init__(self, input_dim, emb_dim, hidden_dim, num_layers=2, state_type='concat'):
+    def __init__(self, input_dim, emb_dim, hidden_dim, num_layers=1, state_type='concat'):
         super(Encoder, self).__init__()
         # 定义嵌入层
         self.embedding = nn.Embedding(input_dim, emb_dim)
@@ -12,6 +12,7 @@ class Encoder(nn.Module):
                           batch_first=True, bidirectional=True)
         # 自定义返回state类型（concat、add）
         self.state_type = state_type
+        self.hidden_dim = hidden_dim
 
     def forward(self, token_seq):
         # token_seq: [batch_size, seq_len]
@@ -28,7 +29,7 @@ class Encoder(nn.Module):
         elif self.state_type == 'add':
             # 返回最后一个时间步的隐藏状态(相加)
             hidden = torch.sum(hidden, dim=0)
-            outputs = outputs[...,:250] + outputs[...,250:]
+            outputs = outputs[...,:self.hidden_dim] + outputs[...,self.hidden_dim:]
         else:
             raise ValueError("state_type must be 'concat' or 'add'")
         return hidden, outputs
@@ -119,7 +120,7 @@ if __name__ == '__main__':
     emb_dim = 256
     hidden_dim = 256
     dropout = 0.5
-    batch_size = 15
+    batch_size = 5
     seq_len = 10
 
     # encoder = Encoder(input_dim, emb_dim, hidden_dim, dropout)
